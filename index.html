@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Math Percentage Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .game-header {
+            margin-bottom: 30px;
+        }
+
+        .game-title {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .problem-display {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #b3d9ff;
+        }
+
+        .fraction {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .answer-input {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .percentage-input {
+            width: 80px;
+            height: 50px;
+            font-size: 20px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .percentage-input:focus {
+            border-color: #667eea;
+        }
+
+        .percent-symbol {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            touch-action: manipulation;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .feedback.hidden {
+            display: none;
+        }
+
+        .game-over {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .game-over.hidden {
+            display: none;
+        }
+
+        .final-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .restart-btn {
+            background: #28a745;
+            color: white;
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .game-title {
+                font-size: 20px;
+            }
+            
+            .fraction {
+                font-size: 28px;
+            }
+            
+            .game-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">Mental Math Percentage Game</h1>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-label">Round</div>
+                    <div class="stat-value" id="current-round">1</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="current-score">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Total</div>
+                    <div class="stat-value">10</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem-display">
+            <div class="fraction" id="fraction-display">7 ÷ 13</div>
+            <div class="question-text">What percentage is this?</div>
+            <div class="answer-input">
+                <input type="number" id="user-answer" class="percentage-input" placeholder="?" min="0" max="100">
+                <span class="percent-symbol">%</span>
+            </div>
+        </div>
+
+        <div class="game-buttons">
+            <button class="btn btn-primary" id="submit-btn" onclick="checkAnswer()">Submit</button>
+            <button class="btn btn-secondary" id="next-btn" onclick="nextProblem()" disabled>Next</button>
+        </div>
+
+        <div class="feedback hidden" id="feedback"></div>
+
+        <div class="game-over hidden" id="game-over">
+            <div class="final-score" id="final-score">Final Score: 0/10</div>
+            <p>Great job practicing your mental math skills!</p>
+            <button class="restart-btn" onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        class MentalMathGame {
+            constructor() {
+                this.currentRound = 1;
+                this.score = 0;
+                this.totalRounds = 10;
+                this.currentProblem = null;
+                this.gameOver = false;
+                
+                this.generateNewProblem();
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Allow Enter key to submit answer
+                document.getElementById('user-answer').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !document.getElementById('submit-btn').disabled) {
+                        this.checkAnswer();
+                    }
+                });
+
+                // Clear feedback when user starts typing a new answer
+                document.getElementById('user-answer').addEventListener('input', () => {
+                    this.hideFeedback();
+                });
+            }
+
+            generateNewProblem() {
+                // Generate numerator (1-9) and denominator (10-99)
+                const numerator = Math.floor(Math.random() * 9) + 1;
+                const denominator = Math.floor(Math.random() * 90) + 10;
+                
+                // Calculate the correct answer
+                const correctPercentage = Math.round((numerator / denominator) * 100);
+                
+                this.currentProblem = {
+                    numerator: numerator,
+                    denominator: denominator,
+                    correctAnswer: correctPercentage
+                };
+
+                // Update the display
+                document.getElementById('fraction-display').textContent = `${numerator} ÷ ${denominator}`;
+                document.getElementById('user-answer').value = '';
+                document.getElementById('user-answer').focus();
+                
+                // Reset buttons
+                document.getElementById('submit-btn').disabled = false;
+                document.getElementById('next-btn').disabled = true;
+                
+                this.hideFeedback();
+            }
+
+            checkAnswer() {
+                const userInput = document.getElementById('user-answer').value;
+                
+                if (userInput === '' || isNaN(userInput)) {
+                    this.showFeedback('Please enter a valid number!', 'incorrect');
+                    return;
+                }
+
+                const userAnswer = parseInt(userInput);
+                const correctAnswer = this.currentProblem.correctAnswer;
+                
+                if (userAnswer === correctAnswer) {
+                    this.score++;
+                    this.showFeedback(`Correct! ${this.currentProblem.numerator}÷${this.currentProblem.denominator} = ${correctAnswer}%`, 'correct');
+                } else {
+                    this.showFeedback(`Incorrect. ${this.currentProblem.numerator}÷${this.currentProblem.denominator} = ${correctAnswer}%`, 'incorrect');
+                }
+
+                // Update score display
+                document.getElementById('current-score').textContent = this.score;
+                
+                // Disable submit button and enable next button
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('next-btn').disabled = false;
+                document.getElementById('next-btn').focus();
+
+                // Check if game is over
+                if (this.currentRound >= this.totalRounds) {
+                    this.endGame();
+                }
+            }
+
+            nextProblem() {
+                if (this.currentRound < this.totalRounds) {
+                    this.currentRound++;
+                    document.getElementById('current-round').textContent = this.currentRound;
+                    this.generateNewProblem();
+                }
+            }
+
+            showFeedback(message, type) {
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = message;
+                feedback.className = `feedback ${type}`;
+            }
+
+            hideFeedback() {
+                document.getElementById('feedback').className = 'feedback hidden';
+            }
+
+            endGame() {
+                document.getElementById('next-btn').textContent = 'Finish';
+                document.getElementById('next-btn').onclick = () => {
+                    document.getElementById('game-over').classList.remove('hidden');
+                    document.getElementById('final-score').textContent = `Final Score: ${this.score}/${this.totalRounds}`;
+                    
+                    // Hide game controls
+                    document.querySelector('.problem-display').style.display = 'none';
+                    document.querySelector('.game-buttons').style.display = 'none';
+                    document.getElementById('feedback').style.display = 'none';
+                };
+            }
+
+            restart() {
+                this.currentRound = 1;
+                this.score = 0;
+                this.gameOver = false;
+                
+                // Reset display
+                document.getElementById('current-round').textContent = '1';
+                document.getElementById('current-score').textContent = '0';
+                document.getElementById('game-over').classList.add('hidden');
+                document.querySelector('.problem-display').style.display = 'block';
+                document.querySelector('.game-buttons').style.display = 'flex';
+                document.getElementById('feedback').style.display = 'block';
+                document.getElementById('next-btn').textContent = 'Next';
+                document.getElementById('next-btn').onclick = () => game.nextProblem();
+                
+                this.generateNewProblem();
+            }
+        }
+
+        // Global game instance
+        let game;
+
+        // Global functions for button onclick events
+        function checkAnswer() {
+            game.checkAnswer();
+        }
+
+        function nextProblem() {
+            game.nextProblem();
+        }
+
+        function restartGame() {
+            game.restart();
+        }
+
+        // Initialize game when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            game = new MentalMathGame();
+        });
+    </script>
+</body>
+</html>
